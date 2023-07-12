@@ -1,46 +1,45 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useId, useRef, useState } from 'react';
 import { apiCall } from './api/api';
-// import { Card } from '@mui/material';
 import Card from './component/Card'
-import './App.css'
+import './App.scss'
+import { UserContext } from './context/Context';
+import NextPage from './component/NextPage';
 
 
 function App() {
-  const [data, setData] = useState()
-  const render = useRef(true)
+  const { users, setUsers } = useContext(UserContext)
+  const [page, setPage] = useState(1)
+  const value = useRef(1);
+  const uniqueId = useId()
+
 
   useEffect(() => {
     const getCardData = async () => {
-      render.current = false;
-      const apiData = await apiCall();
+      try {
+        // const randomPageNumber = Math.floor(Math.random() * (2 - 1 + 1)) + 1;
+        const apiData = await apiCall(page);
+        setUsers(apiData)
+      } catch (error) {
+        console.log("Erro while calling api function: ", error);
+      }
 
-      console.log(apiData);
-      setData(apiData)
     }
 
-    if (render.current) getCardData()
-  }, [data, setData])
+    getCardData()
+
+  }, [page])
 
   return (
-    <div className='outerDiv'>
-      {
-        data && data.firstData.map((user) => (
-          <>
-            <Card user={user} key={user.id} />
-          </>
+    <>
+      <NextPage setPage={setPage} />
+
+      <div className='outerDiv'>
+        {users && users.data.map((user) => (
+          <Card user={user} key={`${uniqueId}--${value.current++}`} />
         ))
-      }
-
-      {
-        data && data.nextData.map((user) => (
-          <>
-            <Card user={user} key={user.id} />
-          </>
-        ))
-      }
-
-    </div>
-
+        }
+      </div>
+    </>
   );
 }
 

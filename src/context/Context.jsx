@@ -1,18 +1,18 @@
 import { createContext, useState } from "react";
 
-export const Context = createContext(null);
+export const UserContext = createContext(null);
 
 
 const AccountProvider = ({ children }) => {
-    const [var1, setVar1] = useState();
+    const [users, setUsers] = useState();
 
     return (
-        <Context.Provider value={{
-            var1,
-            setVar1
+        <UserContext.Provider value={{
+            users,
+            setUsers
         }}>
             {children}
-        </Context.Provider>
+        </UserContext.Provider>
     )
 }
 
